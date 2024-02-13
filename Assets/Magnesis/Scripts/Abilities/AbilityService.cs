@@ -19,16 +19,20 @@ public class AbilityService : IDisposable, IUpdatable
     }
 
     public bool AbilitySelected => _currentAbility != null;
-    public bool AbilityIsActive => _currentAbility.IsActive;
+    public bool AbilityIsActive => AbilitySelected && _currentAbility.IsActive;
 
-    public void Activate(AbilityType type)
+    public void ChooseAbilityByType(AbilityType type)
     {
-        if(_currentAbility != null && _currentAbility.Type != type)
+        if (_currentAbility != null && _currentAbility.Type != type)
         {
             DeactivateActiveAbility();
         }
 
         _currentAbility = Get(type);
+    }
+
+    public void Activate()
+    {
         _currentAbility.Activate();
 
         _updateService.Register<IUpdatable>(this);
@@ -67,5 +71,13 @@ public class AbilityService : IDisposable, IUpdatable
         {
             throw new ArgumentException($"Ability with type {abilityType} - not contains in ability map");
         }
+    }
+
+    public void FixedTick(float deltaTime)
+    {
+    }
+
+    public void LateTick(float deltaTime)
+    {
     }
 }

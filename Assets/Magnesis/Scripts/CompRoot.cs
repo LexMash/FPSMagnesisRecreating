@@ -6,8 +6,10 @@ public class CompRoot : MonoBehaviour
 {
     [SerializeField] private PlayerView _playerView;
     [SerializeField] private MagnesisAbilityConfig _magnesisConfig;
+    [SerializeField] private PlayerConfig _playerConfig;
 
     private List<IDisposable> _disposables = new();
+
     private UpdateService _updateService;
     private GameInput _input;
     private MagnesisAbility _magnesisAbility;
@@ -19,6 +21,8 @@ public class CompRoot : MonoBehaviour
     {
         _updateService = new();
         _disposables.Add(_updateService);
+
+        _playerView.Mover.Init(_playerConfig, _updateService);
 
         _input = new();
         _disposables.Add(_input);
@@ -37,7 +41,7 @@ public class CompRoot : MonoBehaviour
 
     private void OnDestroy()
     {
-        for(int i = _disposables.Count; i > 0; i--)
+        for(int i = _disposables.Count - 1; i > 0; i--)
             _disposables[i].Dispose();
 
         _updateService = null;

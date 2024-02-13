@@ -40,19 +40,19 @@ public class UpdateService : IDisposable
     public void FixedUpdate(float timeDelta)
     {
         for(int i = 0; i < _fixedUpdatables.Count; i++)
-            _fixedUpdatables[i].Tick(timeDelta);
+            _fixedUpdatables[i].FixedTick(timeDelta);
     }
 
     public void Update(float timeDelta)
     {
-        for (int i = 0; i < _fixedUpdatables.Count; i++)
+        for (int i = 0; i < _updatables.Count; i++)
             _updatables[i].Tick(timeDelta);
     }
 
     public void LateUpdate(float timeDelta) 
     {
-        for (int i = 0; i < _fixedUpdatables.Count; i++)
-            _lateUpdatables[i].Tick(timeDelta);
+        for (int i = 0; i < _lateUpdatables.Count; i++)
+            _lateUpdatables[i].LateTick(timeDelta);
     }
 
     public void Dispose()

@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class RayCaster : MonoBehaviour
 {
-    [SerializeField] private float _castDistance;
     [SerializeField] private Camera _camera;
     [SerializeField] private LayerMask _targetMask;
 
@@ -22,15 +21,15 @@ public class RayCaster : MonoBehaviour
         _screenCenter = new Vector3(Screen.width / 2, Screen.height / 2, 0);
     }
 
-    public void RayCast()
+    public void RayCast(float distance)
     {
         Ray ray = _camera.ScreenPointToRay(_screenCenter);
 
-        if (Physics.RaycastNonAlloc(ray, _raycastHits, _castDistance, _targetMask, QueryTriggerInteraction.Ignore) > 0)
+        if (Physics.RaycastNonAlloc(ray, _raycastHits, distance, _targetMask, QueryTriggerInteraction.Ignore) > 0)
         {
             Collider collider = _raycastHits[0].collider;
 
-            Debug.Log(collider.name);
+            //Debug.Log(collider.name);
 
             if (IsSameObject(collider))
                 return;
