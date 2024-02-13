@@ -14,3 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Type>k__BackingField: 1
   <MaxUsageDistance>k__BackingField: 5
+  <MaxScanObjectRadius>k__BackingField: 10
+  <MaxFollowSpeedToTarget>k__BackingField: 5
+  <SmoothLerp>k__BackingField: 5

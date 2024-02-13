@@ -16,7 +16,6 @@ public class CompRoot : MonoBehaviour
     private AbilityService _abilityService;
     private PlayerController _playerController;
 
-
     private void Awake()
     {
         _updateService = new();
@@ -27,12 +26,14 @@ public class CompRoot : MonoBehaviour
         _input = new();
         _disposables.Add(_input);
 
-        _magnesisAbility = new(_magnesisConfig, _playerView);
+        _magnesisAbility = new(_magnesisConfig, _playerView, _input);
         _abilityService = new AbilityService(_updateService, new []{ _magnesisAbility });
         _disposables.Add(_abilityService);
 
         _playerController = new(_input, _abilityService, _playerView);
         _disposables.Add(_playerController);
+
+        DontDestroyOnLoad(this);
     }
 
     private void FixedUpdate() => _updateService.FixedUpdate(Time.fixedDeltaTime);

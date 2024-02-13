@@ -4,4 +4,5 @@ public class PlayerView : MonoBehaviour
 {
     [field:SerializeField] public RayCaster RayCaster {  get; private set; }
     [field:SerializeField] public Mover Mover { get; private set; }
+    [field:SerializeField] public MagnesisView MagnesisView { get; private set; }
 }

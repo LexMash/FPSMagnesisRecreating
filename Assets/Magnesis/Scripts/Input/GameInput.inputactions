@@ -7,7 +7,7 @@
             "actions": [
                 {
                     "name": "Move",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "1d4bb632-abbc-407c-ab6c-944abb314de8",
                     "expectedControlType": "Vector2",
                     "processors": "",
@@ -666,6 +666,56 @@
                     "action": "TrackedDeviceOrientation",
                     "isComposite": false,
                     "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Magnesis",
+            "id": "12173312-3dbe-48cc-9325-d4dbd4d373c2",
+            "actions": [
+                {
+                    "name": "NearFar",
+                    "type": "PassThrough",
+                    "id": "c546ac47-f2dd-4b84-b9c2-ea1d87f57afc",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "1D Axis",
+                    "id": "37b20014-42c0-4263-a686-529070c5e229",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NearFar",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "5ab3c819-126f-4ef7-b610-bb50b85263a2",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "NearFar",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "9dc257c0-4474-4db4-8a46-caf0ecf8c007",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "NearFar",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }

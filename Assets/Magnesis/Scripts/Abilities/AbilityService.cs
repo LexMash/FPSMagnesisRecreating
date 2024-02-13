@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class AbilityService : IDisposable, IUpdatable
+public class AbilityService : IDisposable, IFixedUpdatable
 {
     private readonly Dictionary<AbilityType, IAbility> _abilitiesMap = new();
     private readonly UpdateService _updateService;
+
     private IAbility _currentAbility;
 
     public AbilityService(UpdateService updateService, IAbility[] abilities)
@@ -35,15 +36,14 @@ public class AbilityService : IDisposable, IUpdatable
     {
         _currentAbility.Activate();
 
-        _updateService.Register<IUpdatable>(this);
+        _updateService.Register<IFixedUpdatable>(this);
     }
 
     public void DeactivateActiveAbility()
     {
-        _updateService.Unregister<IUpdatable>(this);
+        _updateService.Unregister<IFixedUpdatable>(this);
 
-        _currentAbility.Deactivate();
-        _currentAbility = null;       
+        _currentAbility.Deactivate();    
     }
 
     public void UseActiveAbility()
@@ -53,13 +53,16 @@ public class AbilityService : IDisposable, IUpdatable
 
     public void Dispose()
     {
-        _updateService.Unregister<IUpdatable>(this);
+        _updateService.Unregister<IFixedUpdatable>(this);
 
         _currentAbility = null;
         _abilitiesMap.Clear();
     }
 
-    public void Tick(float deltaTime) => _currentAbility.UpdateState(deltaTime);
+    public void FixedTick(float deltaTime)
+    {
+        _currentAbility.UpdateState(deltaTime);
+    }
 
     private IAbility Get(AbilityType abilityType)
     {
@@ -73,11 +76,13 @@ public class AbilityService : IDisposable, IUpdatable
         }
     }
 
-    public void FixedTick(float deltaTime)
+    public void Tick(float deltaTime)
     {
+        throw new NotImplementedException();
     }
 
     public void LateTick(float deltaTime)
     {
+        throw new NotImplementedException();
     }
 }

@@ -60,14 +60,9 @@ public class PlayerController : IDisposable
         }
     }
 
-    private void SetAbilityPerformed(InputAction.CallbackContext obj)
+    private void SetAbilityPerformed(InputAction.CallbackContext ctx)
     {
-        SetAbility(AbilityType.Magnesis);
-    }
-
-    private void SetAbility(AbilityType type)
-    {
-        _abilityService.ChooseAbilityByType(type);
+        _abilityService.ChooseAbilityByType(AbilityType.Magnesis);
     }
 
     private void ActivateAbility()

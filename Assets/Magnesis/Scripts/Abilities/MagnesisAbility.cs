@@ -10,18 +10,22 @@ public class MagnesisAbility : IAbility
 
     private readonly MagnesisAbilityConfig _config;
     private readonly PlayerView _playerView;
+    private readonly GameInput _input;
 
-    public MagnesisAbility(MagnesisAbilityConfig config, PlayerView playerView)
+    private bool _isUsing;
+
+    public MagnesisAbility(MagnesisAbilityConfig config, PlayerView playerView, GameInput input)
     {
         _config = config;
         _playerView = playerView;
+        _input = input;
         _data = new MagnesisData();
 
         _stateMachine = new StateMachine();
         _stateMachine
-            .RegisterState(new MagnesisWaitTargetState(_stateMachine, _data, _config))
-            .RegisterState(new MagnesisActiveState(_stateMachine, _data, _config))
-            .RegisterState(new MagnesisShotState(_stateMachine, _data, _config))
+            .RegisterState(new MagnesisWaitTargetState(_stateMachine, _data, _config, _playerView.RayCaster))
+            .RegisterState(new MagnesisActiveState(_stateMachine, _data, _config, _playerView.MagnesisView, _input))
+            .RegisterState(new MagnesisShotState(_stateMachine, _data, _playerView.MagnesisView))
             .RegisterState(IStateMachine.EmptyState);
     }
 
@@ -34,12 +38,17 @@ public class MagnesisAbility : IAbility
     public void Deactivate()
     {
         IsActive = false;
+        _isUsing = false;
         _stateMachine.SetState<EmptyState>();
     }
 
     public void Use()
     {
-        _stateMachine.SetState<MagnesisShotState>();
+        if (!_isUsing)
+        {
+            _stateMachine.SetState<MagnesisShotState>();
+            _isUsing = true;
+        }        
     }
 
     public void UpdateState(float deltaTime)

@@ -16,7 +16,6 @@ public class Mover : MonoBehaviour, IFixedUpdatable
     private Vector2 _cachedDeltaRotation;
 
     private float _currentCameraRotationAngle;
-    private Vector2 _cashedSmoothedDeltaRotation;
     private bool _isInitialed;
     
     public void Init(PlayerConfig config, UpdateService updateService)
@@ -33,7 +32,7 @@ public class Mover : MonoBehaviour, IFixedUpdatable
     {
         if(_isInitialed)
         {
-            _updateService.Unregister<IFixedUpdatable>(this);
+            _updateService.Register<IFixedUpdatable>(this);
         }      
     }
 
@@ -50,6 +49,7 @@ public class Mover : MonoBehaviour, IFixedUpdatable
         ApplyRotation(deltaTime);
         ApplyVelocity(deltaTime);
     }
+
     public void Tick(float deltaTime) { }
     public void LateTick(float deltaTime) { }
 

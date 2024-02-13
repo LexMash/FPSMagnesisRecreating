@@ -29,7 +29,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             ""actions"": [
                 {
                     ""name"": ""Move"",
-                    ""type"": ""Value"",
+                    ""type"": ""PassThrough"",
                     ""id"": ""1d4bb632-abbc-407c-ab6c-944abb314de8"",
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
@@ -690,6 +690,56 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Magnesis"",
+            ""id"": ""12173312-3dbe-48cc-9325-d4dbd4d373c2"",
+            ""actions"": [
+                {
+                    ""name"": ""NearFar"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""c546ac47-f2dd-4b84-b9c2-ea1d87f57afc"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""37b20014-42c0-4263-a686-529070c5e229"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""NearFar"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""5ab3c819-126f-4ef7-b610-bb50b85263a2"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""NearFar"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""9dc257c0-4474-4db4-8a46-caf0ecf8c007"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""NearFar"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -774,6 +824,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
+        // Magnesis
+        m_Magnesis = asset.FindActionMap("Magnesis", throwIfNotFound: true);
+        m_Magnesis_NearFar = m_Magnesis.FindAction("NearFar", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1027,6 +1080,52 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         }
     }
     public UIActions @UI => new UIActions(this);
+
+    // Magnesis
+    private readonly InputActionMap m_Magnesis;
+    private List<IMagnesisActions> m_MagnesisActionsCallbackInterfaces = new List<IMagnesisActions>();
+    private readonly InputAction m_Magnesis_NearFar;
+    public struct MagnesisActions
+    {
+        private @GameInput m_Wrapper;
+        public MagnesisActions(@GameInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @NearFar => m_Wrapper.m_Magnesis_NearFar;
+        public InputActionMap Get() { return m_Wrapper.m_Magnesis; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MagnesisActions set) { return set.Get(); }
+        public void AddCallbacks(IMagnesisActions instance)
+        {
+            if (instance == null || m_Wrapper.m_MagnesisActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_MagnesisActionsCallbackInterfaces.Add(instance);
+            @NearFar.started += instance.OnNearFar;
+            @NearFar.performed += instance.OnNearFar;
+            @NearFar.canceled += instance.OnNearFar;
+        }
+
+        private void UnregisterCallbacks(IMagnesisActions instance)
+        {
+            @NearFar.started -= instance.OnNearFar;
+            @NearFar.performed -= instance.OnNearFar;
+            @NearFar.canceled -= instance.OnNearFar;
+        }
+
+        public void RemoveCallbacks(IMagnesisActions instance)
+        {
+            if (m_Wrapper.m_MagnesisActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IMagnesisActions instance)
+        {
+            foreach (var item in m_Wrapper.m_MagnesisActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_MagnesisActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public MagnesisActions @Magnesis => new MagnesisActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -1092,5 +1191,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         void OnRightClick(InputAction.CallbackContext context);
         void OnTrackedDevicePosition(InputAction.CallbackContext context);
         void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
+    }
+    public interface IMagnesisActions
+    {
+        void OnNearFar(InputAction.CallbackContext context);
     }
 }
