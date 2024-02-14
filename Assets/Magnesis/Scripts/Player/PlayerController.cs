@@ -16,6 +16,8 @@ public class PlayerController : IDisposable
 
         Cursor.lockState = CursorLockMode.Locked;
         Subscribe();
+
+        SetAbilityPerformed(new InputAction.CallbackContext());
     }
 
     private void Subscribe()
