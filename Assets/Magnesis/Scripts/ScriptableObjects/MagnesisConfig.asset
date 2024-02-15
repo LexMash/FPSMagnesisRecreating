@@ -15,6 +15,7 @@ MonoBehaviour:
   <Type>k__BackingField: 1
   <MaxUsageDistance>k__BackingField: 5
   <MinUsageDistance>k__BackingField: 1.5
+  <NearFarStep>k__BackingField: 0.5
   <MaxScanObjectRadius>k__BackingField: 10
   <MaxFollowSpeedToTarget>k__BackingField: 10
-  <SmoothLerp>k__BackingField: 5
+  <SmoothLerp>k__BackingField: 2

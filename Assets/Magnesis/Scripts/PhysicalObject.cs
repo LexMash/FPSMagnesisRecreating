@@ -16,6 +16,12 @@ public class PhysicalObject : MonoBehaviour, IHighLightable
         set => _rigidBody.velocity = value;
     }
 
+    public Vector3 AngularVelocity
+    {
+        get => _rigidBody.angularVelocity;
+        set => _rigidBody.angularVelocity = value;
+    }
+
     public Vector3 InteractionPoint => transform.position + _interactionPosOffset;
     public void EnableGravity(bool isEnable) => _rigidBody.useGravity = isEnable;
 
@@ -30,6 +36,9 @@ public class PhysicalObject : MonoBehaviour, IHighLightable
 
     public void ApplyVelocityAtPosition(Vector3 velocity)
         => _rigidBody.AddForceAtPosition(velocity, InteractionPoint, ForceMode.VelocityChange);
+
+    public void SetInterpolationType(RigidbodyInterpolation interpolation) 
+        => _rigidBody.interpolation = interpolation;
 
     public void HoverEnable()
     {

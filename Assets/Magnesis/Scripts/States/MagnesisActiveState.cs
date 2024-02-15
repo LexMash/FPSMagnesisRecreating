@@ -37,7 +37,6 @@ public class MagnesisActiveState : StateBase
         _currentObject.CollisionExit += CurrentObjectCollisionExit;
 
         _currentObject.EnableGravity(false);
-        _currentObject.EnableRotation(false);
 
         _input.Magnesis.Enable();
         _input.Magnesis.NearFar.performed += NearFarPerformed;
@@ -50,7 +49,6 @@ public class MagnesisActiveState : StateBase
         base.Exit();
 
         _currentObject.EnableGravity(true);
-        _currentObject.EnableRotation(true);
 
         _currentObject.CollisionEnter -= CurrentObjectCollisionEnter;
         _currentObject.CollisionExit -= CurrentObjectCollisionExit;
@@ -65,35 +63,45 @@ public class MagnesisActiveState : StateBase
     {
         SetDistanceFromPivotToPlayer(deltaTime);
         SetObjectPosition(deltaTime);
+
+        if(!_onCollision)
+            DampAngularVelocity(deltaTime);
+    }
+
+    private void DampAngularVelocity(float deltaTime)
+    {
+        if (!_currentObject.AngularVelocity.Equals(Vector3.zero))
+            _currentObject.AngularVelocity = Vector3.Lerp(_currentObject.AngularVelocity, Vector3.zero, _config.SmoothLerp * deltaTime);
     }
 
     private void SetObjectPosition(float deltaTime)
     {
-        Vector3 calculatedPosition =
-                    Vector3.SmoothDamp(_currentObject.transform.position, _magnesisView.Pivot.position, ref _velocity, _config.SmoothLerp * deltaTime);
-
-        if (!_onCollision)
-        {
-            _currentObject.transform.position = calculatedPosition;
-            _currentObject.Velocity = Vector3.zero;
-        }
-        else
-            _currentObject.Velocity = _velocity;
+        Vector3.SmoothDamp(_currentObject.transform.position, _magnesisView.Pivot.position, ref _velocity, _config.SmoothLerp * deltaTime, _config.MaxFollowSpeedToTarget, deltaTime);
+        _currentObject.Velocity = _velocity;
     }
 
     private void SetDistanceFromPivotToPlayer(float deltaTime)
     {
         _magnesisView.Pivot.localPosition =
-                            Vector3.Lerp(_magnesisView.Pivot.localPosition, _targetPivotPosition, _config.SmoothLerp * deltaTime);
+                            Vector3.MoveTowards(_magnesisView.Pivot.localPosition, _targetPivotPosition, _config.SmoothLerp * deltaTime);
     }
 
-    private void CurrentObjectCollisionEnter(Collision collision) => _onCollision = true;
-    private void CurrentObjectCollisionExit(Collision collision) => _onCollision = false;
+    private void CurrentObjectCollisionEnter(Collision collision)
+    {
+        _onCollision = true;
+        _currentObject.SetInterpolationType(RigidbodyInterpolation.Interpolate);
+    }
+
+    private void CurrentObjectCollisionExit(Collision collision)
+    {
+        _onCollision = false;
+        _currentObject.SetInterpolationType(RigidbodyInterpolation.None);
+    }
 
     private void NearFarPerformed(InputAction.CallbackContext ctx)
     {
-        var newTarget = _targetPivotPosition + ctx.ReadValue<float>() * _config.NearFarStep * Vector3.forward;
-        var clampedDistance = Mathf.Clamp(newTarget.magnitude, _config.MinUsageDistance, _config.MaxUsageDistance);
+        float targetDistance = _targetPivotPosition.magnitude + ctx.ReadValue<float>() * _config.NearFarStep;
+        float clampedDistance = Mathf.Clamp(targetDistance, _config.MinUsageDistance, _config.MaxUsageDistance);
         _targetPivotPosition = Vector3.forward * clampedDistance;
     }
 }

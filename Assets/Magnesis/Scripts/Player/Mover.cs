@@ -6,10 +6,11 @@ public class Mover : MonoBehaviour, IFixedUpdatable
     [SerializeField] private Transform _rotationTarget;
     [SerializeField] private CharacterController _controller;
 
+    public Vector3 Velocity => _controller.velocity;
+
     private UpdateService _updateService;
 
-    private float _gravity = -9.81f;
-    private Vector3 _velocity;
+    private Vector3 _gravity = new Vector3(0f, -9.8f, 0f);
     private PlayerConfig _playerConfig;
 
     private Vector2 _inputDirection;
@@ -54,23 +55,14 @@ public class Mover : MonoBehaviour, IFixedUpdatable
     public void LateTick(float deltaTime) { }
 
     public void SetDirection(Vector2 vector) => _inputDirection = vector;
-    public void SetRotation(Vector2 deltaRotation)
-    {
-        _cachedDeltaRotation = deltaRotation;
-    }
+    public void SetRotation(Vector2 deltaRotation) => _cachedDeltaRotation = deltaRotation;
 
     private void ApplyVelocity(float deltaTime)
     {
-        if (_controller.isGrounded && _velocity.y < 0)
-        {
-            _velocity.y = 0f;
-        }
-
         Vector3 moveDirection = transform.right * _inputDirection.x + transform.forward * _inputDirection.y;
-        _controller.Move(_playerConfig.MovementSpeed * deltaTime * moveDirection);
+        Vector3 velocity = (_playerConfig.MovementSpeed * moveDirection + _gravity) * deltaTime;
 
-        _velocity.y += _gravity * deltaTime;
-        _controller.Move(_velocity);
+        _controller.Move(velocity);
     }
 
     private void ApplyRotation(float deltaTime)
