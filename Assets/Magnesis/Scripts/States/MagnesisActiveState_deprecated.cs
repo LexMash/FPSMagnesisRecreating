@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class MagnesisActiveState : StateBase
+public class MagnesisActiveState_deprecated : StateBase
 {
     private readonly MagnesisData _data;
     private readonly MagnesisAbilityConfig _config;
@@ -10,10 +10,11 @@ public class MagnesisActiveState : StateBase
     private readonly GameInput _input;
 
     private PhysicalObject _currentObject;
+    private Vector3 _velocity;
     private Vector3 _targetPivotPosition;
     private bool _onCollision;
 
-    public MagnesisActiveState(IStateMachine stateMachine,
+    public MagnesisActiveState_deprecated(IStateMachine stateMachine,
         MagnesisData data,
         MagnesisAbilityConfig config,
         MagnesisView magnesisView,
@@ -40,9 +41,6 @@ public class MagnesisActiveState : StateBase
         _input.Magnesis.Enable();
         _input.Magnesis.NearFar.performed += NearFarPerformed;
 
-        _magnesisView.Joint.connectedBody = _currentObject.Rigidbody;
-
-        //перенести в шот стейт
         _targetPivotPosition = _magnesisView.Pivot.localPosition;
     }
 
@@ -59,22 +57,27 @@ public class MagnesisActiveState : StateBase
 
         _input.Magnesis.NearFar.performed -= NearFarPerformed;
         _input.Magnesis.Disable();
-
-        _magnesisView.Joint.connectedBody = null;
     }
 
     public override void Update(float deltaTime)
     {
         SetDistanceFromPivotToPlayer(deltaTime);
+        SetObjectPosition(deltaTime);
 
-        //if(!_onCollision)
-        //    DampAngularVelocity(deltaTime);
+        if (!_onCollision)
+            DampAngularVelocity(deltaTime);
     }
 
     private void DampAngularVelocity(float deltaTime)
     {
         if (!_currentObject.AngularVelocity.Equals(Vector3.zero))
             _currentObject.AngularVelocity = Vector3.Lerp(_currentObject.AngularVelocity, Vector3.zero, _config.SmoothLerp * deltaTime);
+    }
+
+    private void SetObjectPosition(float deltaTime)
+    {
+        Vector3.SmoothDamp(_currentObject.transform.position, _magnesisView.Pivot.position, ref _velocity, _config.SmoothLerp * deltaTime, _config.MaxFollowSpeedToTarget, deltaTime);
+        _currentObject.Velocity = _velocity;
     }
 
     private void SetDistanceFromPivotToPlayer(float deltaTime)

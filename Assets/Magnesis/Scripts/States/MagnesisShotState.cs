@@ -22,7 +22,7 @@ public class MagnesisShotState : StateBase
             return;
         }
 
-        _view.Pivot.position = _data.TargetObject.transform.position;
+        //_view.Pivot.position = _data.TargetObject.transform.position;
         _stateMachine.SetState<MagnesisActiveState>();
     }
 

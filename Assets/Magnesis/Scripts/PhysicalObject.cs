@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PhysicalObject : MonoBehaviour, IHighLightable
 {
-    [SerializeField] private Rigidbody _rigidBody;
+    [field: SerializeField] public Rigidbody Rigidbody { get; private set; }
     [SerializeField] private Vector3 _interactionPosOffset;
 
     public event Action<Collision> CollisionEnter;
@@ -12,33 +12,33 @@ public class PhysicalObject : MonoBehaviour, IHighLightable
 
     public Vector3 Velocity
     {
-        get => _rigidBody.velocity;
-        set => _rigidBody.velocity = value;
+        get => Rigidbody.velocity;
+        set => Rigidbody.velocity = value;
     }
 
     public Vector3 AngularVelocity
     {
-        get => _rigidBody.angularVelocity;
-        set => _rigidBody.angularVelocity = value;
+        get => Rigidbody.angularVelocity;
+        set => Rigidbody.angularVelocity = value;
     }
 
     public Vector3 InteractionPoint => transform.position + _interactionPosOffset;
-    public void EnableGravity(bool isEnable) => _rigidBody.useGravity = isEnable;
+    public void EnableGravity(bool isEnable) => Rigidbody.useGravity = isEnable;
 
     public void EnableRotation(bool isEnable) 
-        => _rigidBody.constraints = isEnable ? RigidbodyConstraints.None : RigidbodyConstraints.FreezeRotation;
+        => Rigidbody.constraints = isEnable ? RigidbodyConstraints.None : RigidbodyConstraints.FreezeRotation;
 
     public void ApplyVelocity(Vector3 velocity) 
-        => _rigidBody.AddForce(velocity, ForceMode.VelocityChange);
+        => Rigidbody.AddForce(velocity, ForceMode.VelocityChange);
 
     public void ApplyVelocityAtPosition(Vector3 velocity, Vector3 position)
-        => _rigidBody.AddForceAtPosition(velocity, position, ForceMode.VelocityChange);
+        => Rigidbody.AddForceAtPosition(velocity, position, ForceMode.VelocityChange);
 
     public void ApplyVelocityAtPosition(Vector3 velocity)
-        => _rigidBody.AddForceAtPosition(velocity, InteractionPoint, ForceMode.VelocityChange);
+        => Rigidbody.AddForceAtPosition(velocity, InteractionPoint, ForceMode.VelocityChange);
 
     public void SetInterpolationType(RigidbodyInterpolation interpolation) 
-        => _rigidBody.interpolation = interpolation;
+        => Rigidbody.interpolation = interpolation;
 
     public void HoverEnable()
     {
@@ -63,5 +63,5 @@ public class PhysicalObject : MonoBehaviour, IHighLightable
     private void OnCollisionEnter(Collision collision) => CollisionEnter?.Invoke(collision);
     private void OnCollisionExit(Collision collision) => CollisionExit?.Invoke(collision);
 
-    private void Reset() => _rigidBody = GetComponent<Rigidbody>();
+    private void Reset() => Rigidbody = GetComponent<Rigidbody>();
 }
